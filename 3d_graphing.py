@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import cart_sph_vec as csv 
+import vector_math as vm
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 def generate_cube_vertices(side_length):
@@ -24,8 +24,8 @@ ax = fig.add_subplot(111, projection='3d')
 # Define the initial cube vertices
 side_length = 2.0
 cube_vertices = generate_cube_vertices(side_length)
-elev_axis = csv.Quaternion(0.9238795325112867, 0.2705980500730985, 0.2705980500730985, 0.0)
-azi_axis = csv.Quaternion(0.9238795325112867, 0.0, 0.2209423826903945, 0.3124597141037825)
+elev_axis = vm.Quaternion(0.9238795325112867, 0.2705980500730985, 0.2705980500730985, 0.0)
+azi_axis = vm.Quaternion(0.9238795325112867, 0.0, 0.2209423826903945, 0.3124597141037825)
 rotated_vertices = [elev_axis.rotate_point(vertex) for vertex in cube_vertices]
 rotated_vertices = [azi_axis.rotate_point(vertex) for vertex in rotated_vertices]
 
