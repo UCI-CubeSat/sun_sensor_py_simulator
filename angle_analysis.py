@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import cart_sph_vec as csv
+import vector_math as vm 
 
 # constants
 sensor_width = 10.0  
@@ -43,24 +43,24 @@ azimuth = np.radians((90 - np.degrees(angle_with_x_axis)) % 360)
 #TODO change 1.0 to smth else once we figure out intensities
 
 # get satellite to sun distance vector in spherical coordinates 
-sat_to_sun = csv.sphVec3(1.0, azimuth, np.arctan(x/y))
+sat_to_sun = vm.sphVec3(1.0, azimuth, np.arctan(x/y))
 
 # get the satellites relative position to earth in spherical coordinates 
-sat_pos = csv.cart_to_sph(csv.cartVec3(1, 1, 1))
+sat_pos = vm.cart_to_sph(vm.cartVec3(1, 1, 1))
 
-dist_sph_to_sun = csv.sph_to_cart(sat_to_sun)
-dist_earth_to_sat = csv.sph_to_cart(sat_pos)
-total_dist_cart = csv.add_cart_vec(dist_earth_to_sat, dist_sph_to_sun)
+dist_sph_to_sun = vm.sph_to_cart(sat_to_sun)
+dist_earth_to_sat = vm.sph_to_cart(sat_pos)
+total_dist_cart = vm.add_cart_vec(dist_earth_to_sat, dist_sph_to_sun)
 
 print(f'Spherical Vector (Satellite to Sun): {(spoint := sat_to_sun).r, np.degrees(spoint.theta), np.degrees(spoint.phi)}')
-print(f'Cartesian Vector (Satellite to Sun): {(point := csv.sph_to_cart(sat_to_sun)).x, point.y, point.z}')
+print(f'Cartesian Vector (Satellite to Sun): {(point := vm.sph_to_cart(sat_to_sun)).x, point.y, point.z}')
 print(f'Estimated azimuth angle of the heat source within {fov_degrees} degrees FOV at a height of {height} mm: {azimuth} degrees')
 
 
-EVA = csv.normalize(csv.cartVec3(point.x, point.y, 0))
-AVA = csv.normalize(csv.cartVec3(0, point.y, point.z))
-elev_quaternion = csv.Quaternion(np.cos(spoint.theta/2), (sin := np.sin(spoint.theta/2))*EVA.x, sin*EVA.y, sin*EVA.z)
-azi_quaternion = csv.Quaternion(np.cos(spoint.phi/2), (sin := np.sin(spoint.phi/2))*AVA.x, sin*AVA.y, sin*AVA.z)
+EVA = vm.normalize(vm.cartVec3(point.x, point.y, 0))
+AVA = vm.normalize(vm.cartVec3(0, point.y, point.z))
+elev_quaternion = vm.Quaternion(np.cos(spoint.theta/2), (sin := np.sin(spoint.theta/2))*EVA.x, sin*EVA.y, sin*EVA.z)
+azi_quaternion = vm.Quaternion(np.cos(spoint.phi/2), (sin := np.sin(spoint.phi/2))*AVA.x, sin*AVA.y, sin*AVA.z)
 #rotation = elev_quaternion.rotate_point((1, 1, 1))
 print(elev_quaternion)
 print(azi_quaternion)
