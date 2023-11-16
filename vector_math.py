@@ -42,66 +42,62 @@ def normalize(pt: cartVec3):
 def magnitude(pt: cartVec3):
     return np.sqrt((pt.x ** 2) + (pt.y ** 2) + (pt.z ** 2))
 
+def dot(self, other) -> float:
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+def cross(first, other) -> 'vecC3':
+    x = (first.y * other.z) - (first.z * other.y)
+    y = (first.z * other.x) - (first.x * other.z)
+    z = (first.x * other.y) - (first.y * other.x)
+    return cartVec3(x, y, z)
 
 
-class Quaternion:
-    def __init__(self, w, x, y, z):
-        self.w = w
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def __mul__(self, other):
-        w = self.w * other.w - self.x * other.x - self.y * other.y - self.z * other.z
-        x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y
-        y = self.w * other.y - self.x * other.z + self.y * other.w + self.z * other.x
-        z = self.w * other.z + self.x * other.y - self.y * other.x + self.z * other.w
-
-        return Quaternion(w, x, y, z)
-
-    def inverse(self):
-        norm_sq = self.w**2 + self.x**2 + self.y**2 + self.z**2
-        if norm_sq == 0:
-            return Quaternion(0, 0, 0, 0)
-        inv_norm_sq = 1.0 / norm_sq
-        return Quaternion(self.w * inv_norm_sq, -self.x * inv_norm_sq, -self.y * inv_norm_sq, -self.z * inv_norm_sq)
-
-    def rotate_point(self, point):
-        # Convert the point to a quaternion
-        p = Quaternion(0, point[0], point[1], point[2])
-
-        # Apply the quaternion rotation
-        rotated_point = (self * p * self.inverse()).as_tuple()
-        rotated_point = (rotated_point[1], rotated_point[2], rotated_point[3])
-
-        return rotated_point
-
-    def as_tuple(self):
-        return (self.w, self.x, self.y, self.z)
-
+class vecC3: # cartesian vector
+    def __init__(self, x, y, z):
+        self.x, self.y, self.z = x, y, z
+        self.mag = np.sqrt((x**2) + (y**2) + (z**2))
+    
     def __str__(self):
-        return f"{self.w} + {self.x}i + {self.y}j + {self.z}k"
+        return f'<{self.x}, {self.y}, {self.z}>'
+    
+    def __add__(self, other):
+        return vecC3(self.x + other.x, self.y + other.y, self.z + other.z)
+    
+    def __sub__(self, other):
+        return vecC3(self.x - other.x, self.y - other.y, self.z - other.z)
 
+    def normalize(self) -> 'vecC3':
+        return vecC3(self.x/self.mag, self.y/self.mag, self.z/self.mag)
 
-# test_sat = cartVec3(1, 0, 0)
-# test_sun = sub_cart_vec(test_sat, cartVec3(3, 0, 0))
-# print(f'test sat, sun {test_sat, test_sun}')
+    def convert_sph(self) -> 'vecS3':
+        x, y, z, = self.x, self.y, self.z 
+        r = np.sqrt((x * x) + (y * y) + (z * z))
+        if x == 0:
+            theta = np.pi/2
+        else:
+            theta = np.arctan(y/x)
+        phi = np.arccos(z/r)
+        return vecS3(r, theta, phi)
+    
+    def dot(self, other) -> float:
+        return self.x * other.x + self.y * other.y + self.z * other.z
 
-# check = add_cart_vec(test_sat, test_sun)
-# print(f'Check: {check.x, check.y, check.z}')
+    def cross(self, other) -> 'vecC3':
+        x = self.y * other.z - self.z * other.y
+        y = self.z * other.x - self.x * other.z
+        z = self.x * other.y - self.y * other.x
+        return vecC3(x, y, z)
 
-# sph_sat = cart_to_sph(test_sat)
-# sph_sun = cart_to_sph(test_sun)
-# print(f'sph Sat, Sun: {sph_sat, sph_sun}')
+    
+class vecS3: # spherical vector 
+    def __init__(self, r, theta, phi):
+        self.r, self.theta, self.phi = r, theta, phi
 
-# cart_sat = sph_to_cart(sph_sat)
-# cart_sun = sph_to_cart(sph_sun)
-# print(f'cart sat, sun {cart_sat, cart_sun}')
-
-# sun_earth = add_cart_vec(cart_sat, cart_sun)
-# print(f'sun-earth cart: {sun_earth}')
-
-# print(f'sun-earth sph: {cart_to_sph(sun_earth)}')
+    def convert_cart(self) -> 'vecC3':
+        x = self.r * np.sin(self.phi) * np.cos(self.theta)
+        y = self.r * np.sin(self.phi) * np.sin(self.theta)
+        z = self.r * np.cos(self.phi)
+        return vecS3(x, y, z)
 
 
 
