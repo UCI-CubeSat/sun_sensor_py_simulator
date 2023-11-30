@@ -10,20 +10,28 @@ KALMAN pin2(1, 1, 0.01);
 KALMAN pin3(1, 1, 0.01); 
 KALMAN pin4(1, 1, 0.01); 
 
+float digitalToAnalog(float analogValue); 
+
 void setup() {
-  Serial.begin(115200);
-  pinMode(photodiodePin1, OUTPUT);
-  pinMode(photodiodePin2, OUTPUT); 
-  pinMode(photodiodePin3, OUTPUT);
-  pinMode(photodiodePin4, OUTPUT); 
+  Serial.begin(9600);
+  analogReadResolution(14);
+
+  pinMode(photodiodePin1, INPUT);
+  pinMode(photodiodePin2, INPUT); 
+  pinMode(photodiodePin3, INPUT);
+  pinMode(photodiodePin4, INPUT); 
   Serial.println("Begin"); 
 }
 
 void loop() {
-  int value1 = pin1.updateEstimate(analogRead(photodiodePin1));
-  int value2 = pin2.updateEstimate(analogRead(photodiodePin2));
-  int value3 = pin3.updateEstimate(analogRead(photodiodePin3));
-  int value4 = pin4.updateEstimate(analogRead(photodiodePin4));
+  // float value1 = digitalToAnalog(pin1.updateEstimate(analogRead(photodiodePin1)));
+  // float value2 = digitalToAnalog(pin2.updateEstimate(analogRead(photodiodePin2)));
+  // float value3 = digitalToAnalog(pin3.updateEstimate(analogRead(photodiodePin3)));
+  // float value4 = digitalToAnalog(pin4.updateEstimate(analogRead(photodiodePin4)));
+  float value1 = analogRead(photodiodePin1); 
+  float value2 = analogRead(photodiodePin2); 
+  float value3 = analogRead(photodiodePin3); 
+  float value4 = analogRead(photodiodePin4); 
 
   Serial.print(value1);
   Serial.print("\t");
@@ -34,4 +42,8 @@ void loop() {
   Serial.println(value4);
 
   delay(50);
+}
+
+float digitalToAnalog(float digitalValue){ 
+  return((digitalValue * 5.00)/16383);
 }
